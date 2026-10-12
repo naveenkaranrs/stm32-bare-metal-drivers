@@ -1,0 +1,29 @@
+name: Build Firmware
+
+on:
+  push:
+    branches: [ main, profile-cleanup ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Install ARM GNU Toolchain
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gcc-arm-none-eabi make
+
+      - name: Compile Bare-Metal Firmware
+        run: make all
+
+      - name: Verify Binary Outputs
+        run: |
+          test -f build/firmware.elf
+          test -f build/firmware.bin
+          test -f build/firmware.hex
+          echo "Firmware compilation successful!"
